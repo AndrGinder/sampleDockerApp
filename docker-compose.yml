@@ -1,0 +1,46 @@
+services:
+    web:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        depends_on:
+            db:
+                condition: service_healthy
+        ports:
+          - 8080:8080
+    db:
+        image: postgres
+        restart: always
+        user: postgres
+        build:
+            context: .
+            target: final
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=sampleDocker
+            - POSTGRES_PASSWORD=postgres
+        ports:
+            - 5433:5432
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+    seq:
+        image: postgres
+        restart: always
+        user: postgres
+        build:
+            context: .
+            target: final
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=sampleDocker
+            - POSTGRES_PASSWORD=postgres
+        ports:
+            - 5433:5432
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
